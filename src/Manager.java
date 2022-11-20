@@ -1,13 +1,19 @@
+import TaskNotFoundException.TaskNotFoundException;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Scanner;
 
 public class Manager {
 
-    public static void main(String[] args) {
-        java.util.Scanner scanner = new java.util.Scanner(System.in);
+    public static void main(String[] args) throws TaskNotFoundException {
+        Scanner scanner = new Scanner(System.in);
+        Schedule schedule = new Schedule();
         boolean isRunning = true;
+        int id = 0;
         while (isRunning) {
             printMenu();
             System.out.print("Выберите пункт меню: ");
@@ -17,9 +23,8 @@ public class Manager {
                     case 1:
                         inputTask(scanner);
                         break;
-                    schedule.addTask();
                     case 2:
-                        schedule.removeTask();
+                        schedule.removeTask(id);
                         // todo: обрабатываем пункт меню 2
                         break;
                     case 3:
@@ -38,14 +43,37 @@ public class Manager {
         System.out.println("Программа заверщена");
     }
 
+    private static LocalDate getDateFromUser(Scanner scanner) {
+        LocalDate result = null;
+        boolean forceUserToAnswer = true;
+        while (forceUserToAnswer) {
+            try {
+                System.out.println("Введите дату задачи в формате dd.mm.yyyy: ");
+                String date = scanner.next();
+                result = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+                forceUserToAnswer = false;
+            } catch (Exception e) {
+                System.out.println("Введите еще раз, пожалуйста");
+            }
+        }
+        return result;
+    }
+
+
     private static void inputTask(java.util.Scanner scanner) {
         System.out.print("Введите название задачи: ");
         String taskName = scanner.next();
         System.out.print("Введите описание задачи: ");
         String taskDescription = scanner.next();
+        System.out.print("Введите время задачи в формате HH:mm");
+        String time = scanner.next();
+        LocalDate taskDate = getDateFromUser(scanner);
+        LocalTime taskTime = LocalTime.parse(time, DateTimeFormatter.ofPattern("HH:mm"));
+        LocalDateTime resultDate = LocalDateTime.of(taskDate,taskTime);
         System.out.print("персональная? 0 -да, 1-нет");
         int isPersonal = scanner.nextInt();
         int i = parseTaskType(scanner);
+        Schedule schedule = new Schedule();
         switch (i) {
             case 1:
                 DailyTask dailyTask = new DailyTask(taskName, taskDescription, LocalDateTime.now());
@@ -69,7 +97,6 @@ public class Manager {
                 break;
             default:
                 new IllegalArgumentException("Неверно указан тип задачи");
-
         }
     }
 

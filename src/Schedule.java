@@ -10,9 +10,9 @@ public class Schedule {
         taskMap.put(task.getId(), task);
     }
     public void removeTask (int id) throws TaskNotFoundException {
-        if (!taskMap.containsKey(id)) {
-            throw new TaskNotFoundException("Задач с таким id не найдено");
-        }
+            if (!taskMap.containsKey(id)) {
+                throw new TaskNotFoundException("Задач с таким id не найдено");
+            }
         taskMap.remove(id);
     }
 
@@ -36,4 +36,6 @@ public class Schedule {
                 "taskMap=" + taskMap +
                 '}';
     }
+
+
 }
